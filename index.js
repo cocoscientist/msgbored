@@ -37,4 +37,16 @@ app.post('/login',passport.authenticate('local',{
     failureFlash: true
 }))
 
+app.get('/',checkAuthenticate,(req,res)=>{
+    res.render('/main')
+})
+
+function checkAuthenticate(req,res,next){
+    if(req.isAuthenticated()){
+        return next()
+    }else{
+        res.redirect('/login')
+    }
+}
+
 app.listen(process.env.PORT || 8000,()=>console.log("App started"))
