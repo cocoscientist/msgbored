@@ -7,10 +7,17 @@ const passport = require('passport')
 const flash = require('express-flash')
 const session = require('express-session')
 const initialisePassport = require('./passport-config')
+const userRoutes = require('./routes/UserRouter')
+const methodOverride = require('method-override')
 
 initialisePassport(passport)
 
+app.set('views','./views')
+app.set('view engine','pug')
+
+app.use(express.json())
 app.use(express.urlencoded({ extended:false }))
+app.use('/',userRoutes)
 app.use(flash())
 app.use(session({
     secret: process.env.SESSION_SECRET,
@@ -19,26 +26,33 @@ app.use(session({
 }))
 app.use(passport.initialize())
 app.use(passport.session())
-//app.use(methodOverride('_method'))
+app.use(methodOverride('_method'))
 
-mongoose.connect(process.env.MONGO_URL,{ useNewUrlParser: true })
+mongoose.connect(process.env.MONGO_URL,{ useNewUrlParser: true, useUnifiedTopology: true })
 const db = mongoose.connection
 db.on('error',(error)=>{
     console.error(error)
 })
 db.once('open',()=>console.log("Connected to db"))
 
-app.set('views','./views')
-app.set('view engine','pug')
+app.get('/login',(req,res)=>{
+    res.render('login')
+})
 
 app.post('/login',passport.authenticate('local',{
-    successRedirect: '/',
+    successRedirect: '/main',
     failureRedirect: '/login',
     failureFlash: true
 }))
 
-app.get('/',checkAuthenticate,(req,res)=>{
-    res.render('/main')
+app.get('/main',checkAuthenticate,(req,res)=>{
+    console.log(req.user.username)
+    res.render('main',{ username:req.user.username })
+})
+
+app.delete('/logout',(req,res)=>{
+    req.logOut()
+    res.redirect('/login')
 })
 
 function checkAuthenticate(req,res,next){
