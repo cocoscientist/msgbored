@@ -15,9 +15,9 @@ initialisePassport(passport)
 app.set('views','./views')
 app.set('view engine','pug')
 
+app.use('/',userRoutes)
 app.use(express.json())
 app.use(express.urlencoded({ extended:false }))
-app.use('/',userRoutes)
 app.use(flash())
 app.use(session({
     secret: process.env.SESSION_SECRET,
@@ -46,7 +46,7 @@ app.post('/login',passport.authenticate('local',{
 }))
 
 app.get('/main',checkAuthenticate,(req,res)=>{
-    console.log(req.user.username)
+    console.log(req.user)
     res.render('main',{ username:req.user.username })
 })
 

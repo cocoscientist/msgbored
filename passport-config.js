@@ -19,8 +19,12 @@ function initialise(passport){
         }
     }
     passport.use(new LocalStrategy(authUserFunc))
-    passport.serializeUser((user,done)=>done(null,user._id))
-    passport.deserializeUser((id,done)=>done(null,User.findById(id)))
+    passport.serializeUser((user,done)=>done(null,user.username))
+    passport.deserializeUser((username,done)=>{
+        User.findOne({ username: username },(err,user)=>{
+            done(err,user)
+        })
+    })
 }
 
 module.exports = initialise
