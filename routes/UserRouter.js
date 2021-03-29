@@ -13,16 +13,14 @@ const User = require('../models/UserModel')
 }*/
 
 router.post('/signup',async (req,res)=>{
-    console.log(req.body.username)
     let pass = await bcrypt.hash(req.body.password,10)
-    console.log(pass)
     const newUser = new User({
         username: req.body.username,
         password: pass
     })
     try{
         const save = await newUser.save()
-        res.redirect(201,'/login')
+        res.redirect('/login')
     }catch(err){
         res.redirect(400,'/signup',{ message: 'Signup Failed' })
     }
