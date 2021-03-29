@@ -3,35 +3,37 @@ const router = express.Router()
 const bcrypt = require('bcrypt')
 const User = require('../models/UserModel')
 
-async function hashPassword(password){
+/*async function hashPassword(password){
     try{
         let pass = await bcrypt.hash(password,10)
         return pass
     }catch(err){
         return err
     }
-}
+}*/
 
 router.post('/signup',async (req,res)=>{
-    let pass = hashPassword(req.body.password)
+    console.log(req.body.username)
+    let pass = await bcrypt.hash(req.body.password,10)
+    console.log(pass)
     const newUser = new User({
         username: req.body.username,
         password: pass
     })
     try{
         const save = await newUser.save()
-        res.redirect('/login')
+        res.redirect(201,'/login')
     }catch(err){
-        res.redirect('/signup',{ message: 'Signup Failed' })
+        res.redirect(400,'/signup',{ message: 'Signup Failed' })
     }
 })
 
 router.get('/login',(req,res)=>{
-    res.render('/login')
+    res.render('login')
 })
 
 router.get('/signup',(req,res)=>{
-    res.render('/signup')
+    res.render('signup')
 })
 
 module.exports = router
