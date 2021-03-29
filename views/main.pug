@@ -1,6 +1,8 @@
-doctype html 
-html 
-	head	
-		title MsgBored 
-	body 
-		h1 Welcome
+doctype html
+	head
+		title MainPage
+	body
+		if username
+			h1= username
+			form(action='/logout?_method=DELETE', method='POST')
+				button(type='submit') Logout
